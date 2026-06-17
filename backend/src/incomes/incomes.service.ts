@@ -10,18 +10,6 @@ export class IncomesService {
     return this.prisma.income.create({
       data: {
         ...data,
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma.service';
-import { CreateIncomeDto } from './dto/income.dto';
-
-@Injectable()
-export class IncomesService {
-  constructor(private prisma: PrismaService) {}
-
-  async create(userId: number, data: CreateIncomeDto) {
-    return this.prisma.income.create({
-      data: {
-        ...data,
         date: data.date ? new Date(data.date) : new Date(),
         userId,
       },
