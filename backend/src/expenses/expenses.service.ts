@@ -10,18 +10,6 @@ export class ExpensesService {
     return this.prisma.expense.create({
       data: {
         ...data,
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma.service';
-import { CreateExpenseDto } from './dto/expense.dto';
-
-@Injectable()
-export class ExpensesService {
-  constructor(private prisma: PrismaService) {}
-
-  async create(userId: number, data: CreateExpenseDto) {
-    return this.prisma.expense.create({
-      data: {
-        ...data,
         date: data.date ? new Date(data.date) : new Date(),
         userId,
       },
