@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  incomes   Income[]
+  expenses  Expense[]
+}
+
+model Service {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  price       Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relaciones
+  incomes     Income[]
+}
+
+model Income {
+  id          Int      @id @default(autoincrement())
+  amount      Float
+  date        DateTime @default(now())
+  description String?
+  
+  // Relaciones
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  serviceId   Int?     // Opcional, por si es un ingreso extra no ligado a un servicio del catálogo
+  service     Service? @relation(fields: [serviceId], references: [id])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum CategoryType {
+  BUSINESS
+  PERSONAL
+}
+
+model ExpenseCategory {
+  id          Int          @id @default(autoincrement())
+  name        String
+  type        CategoryType
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  // Relaciones
+  expenses    Expense[]
+}
+
+model Expense {
+  id          Int             @id @default(autoincrement())
+  amount      Float
+  date        DateTime        @default(now())
+  description String?
+  
+  // Relaciones
+  userId      Int
+  user        User            @relation(fields: [userId], references: [id])
+  categoryId  Int
+  category    ExpenseCategory @relation(fields: [categoryId], references: [id])
+
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}

@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-textBase font-sans antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-textHighlight font-semibold;
+  }
+}
+
+@layer components {
+  /* Botón Principal (Rojo) */
+  .btn-primary {
+    @apply bg-primary text-background px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:bg-primaryHover hover:shadow-[0_0_15px_rgba(229,9,20,0.4)] active:scale-95;
+  }
+  
+  /* Inputs de formulario */
+  .input-field {
+    @apply w-full bg-surface text-textHighlight border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors;
+  }
+  
+  /* Tarjetas (Cards) */
+  .card {
+    @apply bg-surface rounded-xl p-6 shadow-lg border border-gray-700/50 backdrop-blur-sm;
+  }
+}
