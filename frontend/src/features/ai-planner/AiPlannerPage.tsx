@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, Target, Calendar, Calculator, ArrowRight } from 'lucide-react';
+import { Sparkles, Target, Calculator, ArrowRight } from 'lucide-react';
 
 export const AiPlannerPage: React.FC = () => {
   const [goalAmount, setGoalAmount] = useState<string>('');
