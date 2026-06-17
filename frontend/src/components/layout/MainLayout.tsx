@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { LayoutDashboard, Receipt, TrendingDown, Scissors, LogOut, Tags, Calendar, Sparkles, ChevronDown } from 'lucide-react';
+import { LayoutDashboard, Receipt, TrendingDown, Scissors, LogOut, Tags, Calendar, Sparkles, ChevronDown, Menu, X } from 'lucide-react';
 
 export const MainLayout: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -60,6 +61,8 @@ export const MainLayout: React.FC = () => {
     if (activeItem) {
       setOpenMenu(activeItem.name);
     }
+    // Cerrar menú móvil al cambiar de ruta
+    setIsMobileMenuOpen(false);
   }, [location.pathname]);
 
   const toggleMenu = (name: string) => {
@@ -68,13 +71,24 @@ export const MainLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background flex">
+      {/* Overlay para móvil */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 md:hidden" 
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="w-20 sm:w-64 bg-surface border-r border-gray-700/50 flex flex-col transition-all duration-300">
-        <div className="h-24 flex items-center justify-center sm:justify-start sm:px-6 border-b border-gray-800 py-4">
-          <img src="/logo.png" alt="La Maxima Barbershop" className="h-full object-contain sm:mr-3 drop-shadow-md" />
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-surface border-r border-gray-700/50 flex flex-col transition-transform duration-300 md:relative md:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="h-24 flex items-center justify-between px-6 border-b border-gray-800 py-4">
+          <img src="/logo.png" alt="La Maxima Barbershop" className="h-full object-contain drop-shadow-md" />
+          <button className="md:hidden text-textBase hover:text-textHighlight" onClick={() => setIsMobileMenuOpen(false)}>
+            <X className="w-6 h-6" />
+          </button>
         </div>
         
-        <nav className="flex-1 py-6 space-y-1">
+        <nav className="flex-1 py-6 space-y-1 overflow-y-auto">
           {menuItems.map((item) => {
             const Icon = item.icon;
             const hasSubItems = !!item.subItems;
@@ -92,29 +106,29 @@ export const MainLayout: React.FC = () => {
                         : 'border-l-4 border-transparent text-textBase hover:bg-surface/30 hover:text-textHighlight'
                     }`}
                   >
-                    <div className="flex items-center justify-center sm:justify-start w-full sm:w-auto">
-                      <Icon className="w-5 h-5 sm:mr-3" />
-                      <span className="font-medium hidden sm:inline">{item.name}</span>
+                    <div className="flex items-center justify-start w-full">
+                      <Icon className="w-5 h-5 mr-3" />
+                      <span className="font-medium">{item.name}</span>
                     </div>
-                    <ChevronDown className={`w-4 h-4 hidden sm:block transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                   </button>
                 ) : (
                   <Link
                     to={item.path!}
-                    className={`flex items-center justify-center sm:justify-start px-6 py-3 transition-colors ${
+                    className={`flex items-center justify-start px-6 py-3 transition-colors ${
                       isActive 
                         ? 'border-l-4 border-primary bg-surface/50 text-textHighlight' 
                         : 'border-l-4 border-transparent text-textBase hover:bg-surface/30 hover:text-textHighlight'
                     }`}
                   >
-                    <Icon className="w-5 h-5 sm:mr-3" />
-                    <span className="font-medium hidden sm:inline">{item.name}</span>
+                    <Icon className="w-5 h-5 mr-3" />
+                    <span className="font-medium">{item.name}</span>
                   </Link>
                 )}
 
                 {/* SubItems */}
                 {hasSubItems && isOpen && (
-                  <div className="bg-surface/20 py-2 space-y-1 hidden sm:block border-l-4 border-transparent">
+                  <div className="bg-surface/20 py-2 space-y-1 border-l-4 border-transparent">
                     {item.subItems!.map(sub => (
                       <Link
                         key={sub.name}
@@ -140,32 +154,40 @@ export const MainLayout: React.FC = () => {
             to="/incomes/new" 
             className="flex items-center justify-center w-full px-4 py-3 bg-primary hover:bg-primaryHover text-[#0B0C10] font-bold rounded-lg transition-colors shadow-lg shadow-primary/20"
           >
-            <Scissors className="w-5 h-5 sm:mr-2" />
-            <span className="hidden sm:inline">+ Registrar Corte</span>
+            <Scissors className="w-5 h-5 mr-2" />
+            <span>+ Registrar Corte</span>
           </Link>
           <button 
             onClick={handleLogout}
-            className="flex items-center justify-center sm:justify-start w-full px-4 py-3 text-red-400 hover:bg-red-400/10 rounded-lg transition-colors"
+            className="flex items-center justify-start w-full px-4 py-3 text-red-400 hover:bg-red-400/10 rounded-lg transition-colors"
           >
-            <LogOut className="w-5 h-5 sm:mr-3" />
-            <span className="font-medium hidden sm:inline">Cerrar Sesión</span>
+            <LogOut className="w-5 h-5 mr-3" />
+            <span className="font-medium">Cerrar Sesión</span>
           </button>
         </div>
       </aside>
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-h-screen overflow-hidden">
-        <header className="h-16 bg-surface border-b border-gray-700/50 flex items-center justify-between px-8">
-          <h2 className="text-lg font-semibold text-textHighlight">Panel de Control</h2>
+        <header className="h-16 bg-surface border-b border-gray-700/50 flex items-center justify-between px-4 md:px-8">
           <div className="flex items-center">
-            <span className="text-textBase mr-4">Hola, <strong className="text-textHighlight">{user?.name || user?.email}</strong></span>
-            <div className="w-10 h-10 rounded-full bg-surface border border-gray-700 flex items-center justify-center text-textHighlight font-bold">
+            <button 
+              className="md:hidden mr-4 text-textBase hover:text-textHighlight"
+              onClick={() => setIsMobileMenuOpen(true)}
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+            <h2 className="text-lg font-semibold text-textHighlight hidden md:block">Panel de Control</h2>
+          </div>
+          <div className="flex items-center">
+            <span className="text-textBase text-sm md:text-base mr-3 md:mr-4">Hola, <strong className="text-textHighlight">{user?.name || user?.email?.split('@')[0]}</strong></span>
+            <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-surface border border-gray-700 flex items-center justify-center text-textHighlight font-bold text-sm md:text-base">
               {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
             </div>
           </div>
         </header>
         
-        <div className="flex-1 overflow-auto p-8">
+        <div className="flex-1 overflow-auto p-4 md:p-8">
           <Outlet />
         </div>
       </main>
