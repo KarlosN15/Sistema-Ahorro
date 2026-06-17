@@ -17,14 +17,14 @@ export class CategoriesService {
   }
 
   update(id: number, data: any) {
-    return this.prisma.category.update({
+    return this.prisma.expenseCategory.update({
       where: { id },
       data,
     });
   }
 
   remove(id: number) {
-    return this.prisma.category.delete({
+    return this.prisma.expenseCategory.delete({
       where: { id },
     });
   }
