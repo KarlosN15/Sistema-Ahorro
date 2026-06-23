@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
 import { SavingsService } from './savings.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CurrentUser } from '../auth/current-user.decorator';
 import { SavingsGoalType } from '@prisma/client';
 
 @UseGuards(JwtAuthGuard)
@@ -9,17 +10,17 @@ export class SavingsController {
   constructor(private readonly savingsService: SavingsService) {}
 
   @Get('status')
-  async getStatus(@Request() req) {
-    return this.savingsService.checkPendingDeposit(req.user.id);
+  async getStatus(@CurrentUser() user: any) {
+    return this.savingsService.checkPendingDeposit(user.userId);
   }
 
   @Post('goal')
-  async createGoal(@Request() req, @Body() body: { type: SavingsGoalType; amount: number }) {
-    return this.savingsService.createGoal(req.user.id, body);
+  async createGoal(@CurrentUser() user: any, @Body() body: { type: SavingsGoalType; amount: number }) {
+    return this.savingsService.createGoal(user.userId, body);
   }
 
   @Post('deposit')
-  async makeDeposit(@Request() req) {
-    return this.savingsService.makeDeposit(req.user.id);
+  async makeDeposit(@CurrentUser() user: any) {
+    return this.savingsService.makeDeposit(user.userId);
   }
 }
