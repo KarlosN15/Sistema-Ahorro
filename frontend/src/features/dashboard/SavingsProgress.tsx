@@ -36,7 +36,7 @@ export const SavingsProgress: React.FC = () => {
           </div>
           
           <p className="text-textBase text-sm mb-4">
-            Tu meta oficial es de <strong className="text-textHighlight">{formatCurrency(progress.goalAmount)}</strong> {progress.goalType === 'DAILY' ? 'diarios' : 'semanales'}.
+            Tu meta oficial es ahorrar <strong className="text-white">{localStorage.getItem('ai_goalAmount') ? formatCurrency(parseFloat(localStorage.getItem('ai_goalAmount') || '0')) : 'tu objetivo'}</strong>, guardando <strong className="text-textHighlight">{formatCurrency(progress.goalAmount)}</strong> {progress.goalType === 'DAILY' ? 'diarios' : 'semanales'}.
           </p>
 
           <div className="bg-background border border-gray-700 rounded-xl p-5 mt-auto">

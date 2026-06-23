@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Target, Calculator, ArrowRight, Save } from 'lucide-react';
+import { Sparkles, Target, Calculator, ArrowRight, Save, CheckCircle2 } from 'lucide-react';
 import api from '../../lib/api';
 import { useNavigate } from 'react-router-dom';
 import { SavingsProgress } from '../dashboard/SavingsProgress';
@@ -54,6 +54,7 @@ export const AiPlannerPage: React.FC = () => {
         type: frequency === 'daily' ? 'DAILY' : 'WEEKLY', 
         amount: plan.amountPerPeriod 
       });
+      localStorage.setItem('ai_activeGoalAmount', plan.amountPerPeriod.toFixed(2));
       alert("¡Meta Oficial activada con éxito! Recibirás notificaciones en tu Dashboard.");
       navigate('/');
     } catch (error) {
@@ -244,17 +245,26 @@ export const AiPlannerPage: React.FC = () => {
               </ul>
             </div>
 
-            <button 
-              onClick={saveOfficialGoal}
-              disabled={isSaving}
-              className="btn-primary w-full flex items-center justify-center gap-2"
-            >
-              <Save className="w-5 h-5" />
-              {isSaving ? 'Guardando...' : 'Establecer como mi Meta Oficial'}
-            </button>
-            <p className="text-xs text-textBase text-center mt-3">
-              Activa esta meta para recibir notificaciones y llevar tu progreso en el Dashboard.
-            </p>
+            {plan.amountPerPeriod.toFixed(2) === localStorage.getItem('ai_activeGoalAmount') ? (
+              <div className="bg-green-500/20 text-green-400 p-3 rounded-lg flex items-center justify-center font-semibold mt-4 border border-green-500/30">
+                <CheckCircle2 className="w-5 h-5 mr-2" />
+                Esta es tu Meta Oficial Activa
+              </div>
+            ) : (
+              <>
+                <button 
+                  onClick={saveOfficialGoal}
+                  disabled={isSaving}
+                  className="btn-primary w-full flex items-center justify-center gap-2"
+                >
+                  <Save className="w-5 h-5" />
+                  {isSaving ? 'Guardando...' : 'Establecer como mi Meta Oficial'}
+                </button>
+                <p className="text-xs text-textBase text-center mt-3">
+                  Activa esta meta para recibir notificaciones y llevar tu progreso en el Dashboard.
+                </p>
+              </>
+            )}
           </div>
         </div>
       </div>
