@@ -73,6 +73,34 @@ export class SavingsService {
     }
   }
 
+  async getSavingsProgress(userId: number) {
+    const goal = await this.getActiveGoal(userId);
+    if (!goal) return { hasGoal: false };
+
+    // Get all deposits for this active goal
+    const deposits = await this.prisma.savingsDeposit.findMany({
+      where: { goalId: goal.id },
+      orderBy: { date: 'desc' },
+      take: 10, // Get the last 10 deposits for history
+    });
+
+    // Sum all deposits for the active goal to get total saved
+    const aggregate = await this.prisma.savingsDeposit.aggregate({
+      where: { goalId: goal.id },
+      _sum: { amount: true },
+    });
+
+    const totalSaved = aggregate._sum.amount || 0;
+
+    return {
+      hasGoal: true,
+      goalType: goal.type,
+      goalAmount: goal.amount,
+      totalSaved,
+      history: deposits,
+    };
+  }
+
   async makeDeposit(userId: number) {
     const status = await this.checkPendingDeposit(userId);
     if (!status.hasGoal || !status.goal) {

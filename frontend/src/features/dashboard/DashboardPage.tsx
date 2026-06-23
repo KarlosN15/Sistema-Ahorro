@@ -4,6 +4,7 @@ import api from '../../lib/api';
 import { formatCurrency } from '../../lib/utils';
 import { TrendingUp, TrendingDown, DollarSign, Wallet, Users, PiggyBank, Bot, BellRing, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { SavingsProgress } from './SavingsProgress';
 
 export const DashboardPage: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -84,6 +85,13 @@ export const DashboardPage: React.FC = () => {
               Ir al Planificador IA
             </button>
           </div>
+        </section>
+      )}
+
+      {/* SECCIÓN: PROGRESO DE AHORRO (Solo si tiene meta) */}
+      {savingsStatus && savingsStatus.hasGoal && (
+        <section className="mb-6">
+          <SavingsProgress />
         </section>
       )}
 

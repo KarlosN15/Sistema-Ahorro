@@ -14,6 +14,11 @@ export class SavingsController {
     return this.savingsService.checkPendingDeposit(user.userId);
   }
 
+  @Get('progress')
+  async getProgress(@CurrentUser() user: any) {
+    return this.savingsService.getSavingsProgress(user.userId);
+  }
+
   @Post('goal')
   async createGoal(@CurrentUser() user: any, @Body() body: { type: SavingsGoalType; amount: number }) {
     return this.savingsService.createGoal(user.userId, body);
