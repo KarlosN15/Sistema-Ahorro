@@ -22,25 +22,23 @@ export const HistoryPage: React.FC = () => {
           <Calendar className="w-8 h-8 text-primary" />
           Bitácora Histórica
         </h1>
-        <p className="text-textBase mt-2">Aquí se guardan tus métricas semana tras semana para que midas tu crecimiento.</p>
+        <p className="text-textBase mt-2">Aquí se guardan tus métricas día tras día para que midas tu crecimiento.</p>
       </div>
 
       <div className="grid grid-cols-1 gap-4">
-        {history?.map((week: any, index: number) => {
-          const startDate = new Date(week.weekStart);
+        {history?.map((day: any, index: number) => {
+          const startDate = new Date(day.dayStart);
           startDate.setMinutes(startDate.getMinutes() + startDate.getTimezoneOffset());
-          const endDate = new Date(startDate);
-          endDate.setDate(startDate.getDate() + 6);
           
-          const weekLabel = `${startDate.toLocaleDateString()} al ${endDate.toLocaleDateString()}`;
+          const dayLabel = startDate.toLocaleDateString();
 
           return (
-            <div key={week.weekStart} className="card relative overflow-hidden group hover:border-primary/50 transition-colors">
+            <div key={day.dayStart} className="card relative overflow-hidden group hover:border-primary/50 transition-colors">
               <div className="absolute top-0 right-0 h-full w-2 bg-primary/20 group-hover:bg-primary transition-colors"></div>
               
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                  <h3 className="text-xl font-bold text-textHighlight mb-1">{index === 0 ? 'Semana Actual' : `Semana del ${weekLabel}`}</h3>
+                  <h3 className="text-xl font-bold text-textHighlight mb-1">{index === 0 ? 'Hoy' : `Día: ${dayLabel}`}</h3>
                   <p className="text-sm text-textBase">Guardado automáticamente</p>
                 </div>
                 
@@ -51,7 +49,7 @@ export const HistoryPage: React.FC = () => {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-textBase">Clientes</p>
-                      <p className="font-bold text-textHighlight text-lg">{week.clients}</p>
+                      <p className="font-bold text-textHighlight text-lg">{day.clients}</p>
                     </div>
                   </div>
 
@@ -61,7 +59,7 @@ export const HistoryPage: React.FC = () => {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-textBase">Ingreso Bruto</p>
-                      <p className="font-bold text-green-400 text-lg">{formatCurrency(week.totalIncome)}</p>
+                      <p className="font-bold text-green-400 text-lg">{formatCurrency(day.totalIncome)}</p>
                     </div>
                   </div>
 
@@ -71,8 +69,8 @@ export const HistoryPage: React.FC = () => {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-textBase">Beneficio Limpio</p>
-                      <p className={`font-bold text-lg ${week.netProfit >= 0 ? 'text-primary' : 'text-red-400'}`}>
-                        {formatCurrency(week.netProfit)}
+                      <p className={`font-bold text-lg ${day.netProfit >= 0 ? 'text-primary' : 'text-red-400'}`}>
+                        {formatCurrency(day.netProfit)}
                       </p>
                     </div>
                   </div>

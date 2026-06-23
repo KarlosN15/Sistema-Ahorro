@@ -112,26 +112,17 @@ export class ReportsService {
       orderBy: { date: 'desc' }
     });
 
-    const getMonday = (d: Date) => {
-      const date = new Date(d);
-      const day = date.getDay();
-      const diff = date.getDate() - day + (day === 0 ? -6 : 1); 
-      date.setDate(diff);
-      date.setHours(0, 0, 0, 0);
-      return date;
-    };
-
     const historyMap = new Map<string, any>();
 
-    const getWeekKey = (d: Date) => {
-      const monday = getMonday(d);
-      return monday.toISOString().split('T')[0];
+    const getDayKey = (d: Date) => {
+      const date = new Date(d);
+      return date.toISOString().split('T')[0];
     };
 
     incomes.forEach(inc => {
-      const key = getWeekKey(inc.date);
+      const key = getDayKey(inc.date);
       if (!historyMap.has(key)) {
-        historyMap.set(key, { weekStart: key, clients: 0, totalIncome: 0, businessExpenses: 0 });
+        historyMap.set(key, { dayStart: key, clients: 0, totalIncome: 0, businessExpenses: 0 });
       }
       const data = historyMap.get(key);
       data.clients += 1;
@@ -140,9 +131,9 @@ export class ReportsService {
 
     expenses.forEach(exp => {
       if (exp.category.type !== 'BUSINESS') return;
-      const key = getWeekKey(exp.date);
+      const key = getDayKey(exp.date);
       if (!historyMap.has(key)) {
-        historyMap.set(key, { weekStart: key, clients: 0, totalIncome: 0, businessExpenses: 0 });
+        historyMap.set(key, { dayStart: key, clients: 0, totalIncome: 0, businessExpenses: 0 });
       }
       const data = historyMap.get(key);
       data.businessExpenses += exp.amount;
@@ -153,7 +144,7 @@ export class ReportsService {
       netProfit: h.totalIncome - h.businessExpenses
     }));
 
-    historyList.sort((a, b) => new Date(b.weekStart).getTime() - new Date(a.weekStart).getTime());
+    historyList.sort((a, b) => new Date(b.dayStart).getTime() - new Date(a.dayStart).getTime());
 
     return historyList;
   }
