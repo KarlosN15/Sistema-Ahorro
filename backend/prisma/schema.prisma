@@ -18,6 +18,7 @@ model User {
   // Relaciones
   incomes   Income[]
   expenses  Expense[]
+  savingsGoals SavingsGoal[]
 }
 
 model Service {
@@ -75,6 +76,39 @@ model Expense {
   user        User            @relation(fields: [userId], references: [id])
   categoryId  Int
   category    ExpenseCategory @relation(fields: [categoryId], references: [id])
+
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+enum SavingsGoalType {
+  DAILY
+  WEEKLY
+}
+
+model SavingsGoal {
+  id          Int             @id @default(autoincrement())
+  userId      Int
+  user        User            @relation(fields: [userId], references: [id])
+  type        SavingsGoalType
+  amount      Float           // Amount to save per period
+  isActive    Boolean         @default(true)
+  
+  deposits    SavingsDeposit[]
+
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+model SavingsDeposit {
+  id          Int             @id @default(autoincrement())
+  goalId      Int
+  goal        SavingsGoal     @relation(fields: [goalId], references: [id])
+  amount      Float
+  date        DateTime        @default(now())
+  
+  // Optional link to the expense created when deposited
+  expenseId   Int?
 
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt

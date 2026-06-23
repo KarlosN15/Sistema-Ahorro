@@ -163,10 +163,26 @@ export class ReportsService {
     const weekly = await this.getWeeklyAnalytics(userId);
     const aiAdvice = this.getAiAdvice(dashboard, weekly);
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    const todayClients = await this.prisma.income.count({
+      where: {
+        userId,
+        date: {
+          gte: today,
+          lt: tomorrow,
+        }
+      }
+    });
+
     return {
       dashboard,
       weekly,
-      aiAdvice
+      aiAdvice,
+      todayClients
     };
   }
 
