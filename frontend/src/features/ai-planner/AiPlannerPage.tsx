@@ -1,26 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sparkles, Target, Calculator, ArrowRight, Save } from 'lucide-react';
 import api from '../../lib/api';
 import { useNavigate } from 'react-router-dom';
 import { SavingsProgress } from '../dashboard/SavingsProgress';
 
 export const AiPlannerPage: React.FC = () => {
-  const [goalAmount, setGoalAmount] = useState<string>('');
-  const [timeValue, setTimeValue] = useState<string>('');
-  const [timeUnit, setTimeUnit] = useState<'weeks' | 'months'>('months');
-  const [frequency, setFrequency] = useState<'daily' | 'weekly' | 'monthly'>('weekly');
+  const [goalAmount, setGoalAmount] = useState<string>(() => localStorage.getItem('ai_goalAmount') || '');
+  const [timeValue, setTimeValue] = useState<string>(() => localStorage.getItem('ai_timeValue') || '');
+  const [timeUnit, setTimeUnit] = useState<'weeks' | 'months'>(() => (localStorage.getItem('ai_timeUnit') as any) || 'months');
+  const [frequency, setFrequency] = useState<'daily' | 'weekly' | 'monthly'>(() => (localStorage.getItem('ai_frequency') as any) || 'weekly');
   
   const [plan, setPlan] = useState<{
     amountPerPeriod: number;
     totalPeriods: number;
     advice: string[];
     isCalculated: boolean;
-  }>({
-    amountPerPeriod: 0,
-    totalPeriods: 0,
-    advice: [],
-    isCalculated: false
+  }>(() => {
+    const savedPlan = localStorage.getItem('ai_plan');
+    if (savedPlan) {
+      try {
+        return JSON.parse(savedPlan);
+      } catch (e) {}
+    }
+    return {
+      amountPerPeriod: 0,
+      totalPeriods: 0,
+      advice: [],
+      isCalculated: false
+    };
   });
+
+  // Save to localStorage whenever state changes
+  useEffect(() => {
+    localStorage.setItem('ai_goalAmount', goalAmount);
+    localStorage.setItem('ai_timeValue', timeValue);
+    localStorage.setItem('ai_timeUnit', timeUnit);
+    localStorage.setItem('ai_frequency', frequency);
+    localStorage.setItem('ai_plan', JSON.stringify(plan));
+  }, [goalAmount, timeValue, timeUnit, frequency, plan]);
 
   const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
