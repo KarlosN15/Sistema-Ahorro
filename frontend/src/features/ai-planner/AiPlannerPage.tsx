@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Sparkles, Target, Calculator, ArrowRight, Save } from 'lucide-react';
 import api from '../../lib/api';
 import { useNavigate } from 'react-router-dom';
+import { SavingsProgress } from '../dashboard/SavingsProgress';
 
 export const AiPlannerPage: React.FC = () => {
   const [goalAmount, setGoalAmount] = useState<string>('');
@@ -105,6 +106,10 @@ export const AiPlannerPage: React.FC = () => {
           <h1 className="text-3xl font-bold text-textHighlight">Asistente IA de Ahorro</h1>
           <p className="text-textBase mt-1">Tu planificador inteligente para alcanzar metas financieras en tu barbería.</p>
         </div>
+      </div>
+
+      <div className="mb-8">
+        <SavingsProgress />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
