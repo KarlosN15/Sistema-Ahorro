@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { Sparkles, Target, Calculator, ArrowRight } from 'lucide-react';
+import { Sparkles, Target, Calculator, ArrowRight, Save } from 'lucide-react';
+import api from '../../lib/api';
+import { useNavigate } from 'react-router-dom';
 
 export const AiPlannerPage: React.FC = () => {
   const [goalAmount, setGoalAmount] = useState<string>('');
@@ -18,6 +20,31 @@ export const AiPlannerPage: React.FC = () => {
     advice: [],
     isCalculated: false
   });
+
+  const navigate = useNavigate();
+  const [isSaving, setIsSaving] = useState(false);
+
+  const saveOfficialGoal = async () => {
+    if (!plan.isCalculated || frequency === 'monthly') {
+      alert("Por ahora el sistema de notificaciones automáticas solo soporta metas Diarias o Semanales. Por favor cambia la frecuencia a Diario o Semanal para activarla.");
+      return;
+    }
+    
+    setIsSaving(true);
+    try {
+      await api.post('/savings/goal', { 
+        type: frequency === 'daily' ? 'DAILY' : 'WEEKLY', 
+        amount: plan.amountPerPeriod 
+      });
+      alert("¡Meta Oficial activada con éxito! Recibirás notificaciones en tu Dashboard.");
+      navigate('/');
+    } catch (error) {
+      console.error("Error al guardar la meta", error);
+      alert("Hubo un error al guardar tu meta.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const calculatePlan = (e: React.FormEvent) => {
     e.preventDefault();
@@ -180,7 +207,7 @@ export const AiPlannerPage: React.FC = () => {
               </p>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-4 mb-8">
               <h3 className="text-sm font-semibold text-textHighlight uppercase tracking-wider border-b border-gray-700 pb-2">
                 Análisis y Consejos
               </h3>
@@ -194,6 +221,18 @@ export const AiPlannerPage: React.FC = () => {
                 ))}
               </ul>
             </div>
+
+            <button 
+              onClick={saveOfficialGoal}
+              disabled={isSaving}
+              className="btn-primary w-full flex items-center justify-center gap-2"
+            >
+              <Save className="w-5 h-5" />
+              {isSaving ? 'Guardando...' : 'Establecer como mi Meta Oficial'}
+            </button>
+            <p className="text-xs text-textBase text-center mt-3">
+              Activa esta meta para recibir notificaciones y llevar tu progreso en el Dashboard.
+            </p>
           </div>
         </div>
       </div>

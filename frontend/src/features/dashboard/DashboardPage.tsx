@@ -3,10 +3,12 @@ import { useQuery } from '@tanstack/react-query';
 import api from '../../lib/api';
 import { formatCurrency } from '../../lib/utils';
 import { TrendingUp, TrendingDown, DollarSign, Wallet, Users, PiggyBank, Bot, BellRing, CheckCircle2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export const DashboardPage: React.FC = () => {
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
+  const navigate = useNavigate();
 
   const { data, isLoading } = useQuery({
     queryKey: ['full-dashboard', currentYear, currentMonth],
@@ -31,22 +33,6 @@ export const DashboardPage: React.FC = () => {
       // Optional: invalidate full-dashboard if you want net profit to update immediately
     } catch (error) {
       console.error("Error making deposit", error);
-    }
-  };
-
-  const [showGoalForm, setShowGoalForm] = React.useState(false);
-  const [goalType, setGoalType] = React.useState<'DAILY' | 'WEEKLY'>('DAILY');
-  const [goalAmount, setGoalAmount] = React.useState('');
-
-  const handleCreateGoal = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!goalAmount) return;
-    try {
-      await api.post('/savings/goal', { type: goalType, amount: Number(goalAmount) });
-      setShowGoalForm(false);
-      refetchSavings();
-    } catch (error) {
-      console.error("Error creating goal", error);
     }
   };
 
@@ -86,51 +72,18 @@ export const DashboardPage: React.FC = () => {
       {/* SECCIÓN: CREAR META SI NO HAY */}
       {savingsStatus && !savingsStatus.hasGoal && (
         <section className="mb-6">
-          {!showGoalForm ? (
-            <div className="bg-surface border border-gray-800 rounded-xl p-6 flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <PiggyBank className="w-8 h-8 text-textBase" />
-                <div>
-                  <h3 className="text-lg font-bold text-textHighlight">Aún no tienes una meta de ahorro</h3>
-                  <p className="text-textBase text-sm">Establece una meta para separar dinero y asegurar tu rentabilidad.</p>
-                </div>
+          <div className="bg-surface border border-gray-800 rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <PiggyBank className="w-8 h-8 text-textBase" />
+              <div>
+                <h3 className="text-lg font-bold text-textHighlight">Aún no tienes una meta oficial de ahorro</h3>
+                <p className="text-textBase text-sm">Usa el Asistente IA para calcular tu meta y actívala para recibir recordatorios aquí.</p>
               </div>
-              <button onClick={() => setShowGoalForm(true)} className="btn-secondary">Crear Meta</button>
             </div>
-          ) : (
-            <div className="bg-surface border border-primary/50 rounded-xl p-6">
-              <h3 className="text-xl font-bold text-textHighlight mb-4">Nueva Meta de Ahorro</h3>
-              <form onSubmit={handleCreateGoal} className="flex flex-col sm:flex-row gap-4 items-end">
-                <div className="flex-1 w-full">
-                  <label className="block text-sm font-medium text-textBase mb-1">Tipo de Meta</label>
-                  <select 
-                    value={goalType} 
-                    onChange={(e) => setGoalType(e.target.value as any)}
-                    className="w-full bg-background border border-gray-700 text-textHighlight rounded-lg px-4 py-2 focus:outline-none focus:border-primary"
-                  >
-                    <option value="DAILY">Diaria (Todos los días)</option>
-                    <option value="WEEKLY">Semanal (Cada Lunes)</option>
-                  </select>
-                </div>
-                <div className="flex-1 w-full">
-                  <label className="block text-sm font-medium text-textBase mb-1">Cantidad a Guardar ($)</label>
-                  <input 
-                    type="number" 
-                    required 
-                    min="1"
-                    value={goalAmount} 
-                    onChange={(e) => setGoalAmount(e.target.value)}
-                    className="w-full bg-background border border-gray-700 text-textHighlight rounded-lg px-4 py-2 focus:outline-none focus:border-primary"
-                    placeholder="Ej. 50"
-                  />
-                </div>
-                <div className="flex gap-2 w-full sm:w-auto">
-                  <button type="button" onClick={() => setShowGoalForm(false)} className="btn-secondary py-2 flex-1 sm:flex-none">Cancelar</button>
-                  <button type="submit" className="btn-primary py-2 flex-1 sm:flex-none">Guardar</button>
-                </div>
-              </form>
-            </div>
-          )}
+            <button onClick={() => navigate('/ai-planner')} className="btn-secondary whitespace-nowrap">
+              Ir al Planificador IA
+            </button>
+          </div>
         </section>
       )}
 
