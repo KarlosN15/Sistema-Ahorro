@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../../lib/api';
 import { formatCurrency } from '../../lib/utils';
-import { DollarSign, Pencil, Trash2, MoreVertical, X, TrendingUp, PlusCircle } from 'lucide-react';
+import { DollarSign, Pencil, Trash2, MoreVertical, X, TrendingUp, PlusCircle, User } from 'lucide-react';
 
 export const IncomesPage: React.FC = () => {
   const queryClient = useQueryClient();
@@ -13,6 +13,7 @@ export const IncomesPage: React.FC = () => {
 
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
+  const [clientName, setClientName] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [isSuccess, setIsSuccess] = useState(false);
 
@@ -71,6 +72,7 @@ export const IncomesPage: React.FC = () => {
     const payload = { 
       amount: Number(amount), 
       description,
+      clientName: clientName ? clientName : undefined,
       date: dateObj.toISOString()
     };
 
@@ -85,6 +87,7 @@ export const IncomesPage: React.FC = () => {
     setEditingId(inc.id);
     setAmount(inc.amount.toString());
     setDescription(inc.description || '');
+    setClientName(inc.clientName || '');
     setDate(new Date(inc.date).toISOString().split('T')[0]);
     setOpenMenuId(null);
     navigate('/incomes/new');
@@ -100,6 +103,7 @@ export const IncomesPage: React.FC = () => {
     setEditingId(null);
     setAmount('');
     setDescription('');
+    setClientName('');
     setDate(new Date().toISOString().split('T')[0]);
   };
 
@@ -134,7 +138,10 @@ export const IncomesPage: React.FC = () => {
                     </div>
                     <div>
                       <p className="font-bold text-textHighlight text-xl text-green-400">+{formatCurrency(inc.amount)}</p>
-                      <p className="text-sm text-textBase mt-1">{inc.description || 'Corte general'}</p>
+                      <p className="text-sm text-textBase mt-1">
+                        {inc.clientName && <span className="font-semibold text-gray-300">{inc.clientName} • </span>}
+                        {inc.description || 'Corte general'}
+                      </p>
                       <p className="text-xs text-gray-500 mt-1">{new Date(inc.date).toLocaleDateString()}</p>
                     </div>
                   </div>
@@ -212,6 +219,16 @@ export const IncomesPage: React.FC = () => {
                     <DollarSign className="w-6 h-6 text-gray-500" />
                   </div>
                   <input type="number" className="input-field pl-12 py-4 text-xl border-green-500/30 focus:border-green-500" value={amount} onChange={e => setAmount(e.target.value)} required min="0" step="0.01" placeholder="0.00" />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-textBase mb-2">Nombre del Cliente (Opcional)</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <User className="w-5 h-5 text-gray-500" />
+                  </div>
+                  <input type="text" className="input-field pl-12 py-3 text-lg focus:border-green-500" value={clientName} onChange={e => setClientName(e.target.value)} placeholder="Ej. Juan Pérez" />
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">

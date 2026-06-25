@@ -38,6 +38,7 @@ model Income {
   amount      Float
   date        DateTime @default(now())
   description String?
+  clientName  String?
   
   // Relaciones
   userId      Int

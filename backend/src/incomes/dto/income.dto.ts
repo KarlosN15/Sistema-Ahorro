@@ -12,6 +12,10 @@ export class CreateIncomeDto {
   @IsOptional()
   description?: string;
 
+  @IsString()
+  @IsOptional()
+  clientName?: string;
+
   @IsInt()
   @IsOptional()
   serviceId?: number;
