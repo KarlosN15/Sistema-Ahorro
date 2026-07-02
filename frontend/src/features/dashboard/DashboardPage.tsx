@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../lib/api';
 import { formatCurrency } from '../../lib/utils';
@@ -11,10 +11,13 @@ export const DashboardPage: React.FC = () => {
   const currentMonth = new Date().getMonth() + 1;
   const navigate = useNavigate();
 
+  const [selectedYear, setSelectedYear] = useState<number>(currentYear);
+  const [selectedMonth, setSelectedMonth] = useState<number>(currentMonth);
+
   const { data, isLoading } = useQuery({
-    queryKey: ['full-dashboard', currentYear, currentMonth],
+    queryKey: ['full-dashboard', selectedYear, selectedMonth],
     queryFn: async () => {
-      const res = await api.get(`/reports/full-dashboard?year=${currentYear}&month=${currentMonth}`);
+      const res = await api.get(`/reports/full-dashboard?year=${selectedYear}&month=${selectedMonth}`);
       return res.data;
     }
   });
@@ -37,6 +40,23 @@ export const DashboardPage: React.FC = () => {
     }
   };
 
+  const months = [
+    { value: 1, label: 'Enero' },
+    { value: 2, label: 'Febrero' },
+    { value: 3, label: 'Marzo' },
+    { value: 4, label: 'Abril' },
+    { value: 5, label: 'Mayo' },
+    { value: 6, label: 'Junio' },
+    { value: 7, label: 'Julio' },
+    { value: 8, label: 'Agosto' },
+    { value: 9, label: 'Septiembre' },
+    { value: 10, label: 'Octubre' },
+    { value: 11, label: 'Noviembre' },
+    { value: 12, label: 'Diciembre' },
+  ];
+
+  const years = Array.from({ length: 5 }, (_, i) => currentYear - i);
+
   if (isLoading || !data) return <div className="text-textBase mt-10 text-center animate-pulse">Cargando reporte de finanzas...</div>;
 
   const { dashboard, weekly, aiAdvice, todayClients } = data;
@@ -44,6 +64,35 @@ export const DashboardPage: React.FC = () => {
   return (
     <div className="space-y-8 pb-10">
       
+      {/* SECCIÓN: FILTRO DE MES/AÑO */}
+      <section className="bg-surface border border-gray-800 rounded-xl p-4 flex flex-wrap items-center gap-6">
+        <h2 className="text-lg font-bold text-textHighlight">Mes a Consultar:</h2>
+        <div className="flex items-center gap-3">
+          <label className="text-sm font-medium text-textBase">Mes</label>
+          <select 
+            value={selectedMonth} 
+            onChange={(e) => setSelectedMonth(Number(e.target.value))}
+            className="input-field py-1.5 px-3 min-w-[120px]"
+          >
+            {months.map(m => (
+              <option key={m.value} value={m.value}>{m.label}</option>
+            ))}
+          </select>
+        </div>
+        <div className="flex items-center gap-3">
+          <label className="text-sm font-medium text-textBase">Año</label>
+          <select 
+            value={selectedYear} 
+            onChange={(e) => setSelectedYear(Number(e.target.value))}
+            className="input-field py-1.5 px-3 min-w-[100px]"
+          >
+            {years.map(y => (
+              <option key={y} value={y}>{y}</option>
+            ))}
+          </select>
+        </div>
+      </section>
+
       {/* SECCIÓN: NOTIFICACIÓN DE AHORRO */}
       {savingsStatus?.hasGoal && savingsStatus?.pendingDeposit !== null && (
         <section className="mb-6">
