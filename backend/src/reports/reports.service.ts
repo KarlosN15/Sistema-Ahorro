@@ -100,14 +100,22 @@ export class ReportsService {
     };
   }
 
-  async getHistory(userId: number) {
+  async getHistory(userId: number, year?: number, month?: number) {
+    const whereClause: any = { userId };
+    
+    if (year && month) {
+      const startDate = new Date(year, month - 1, 1);
+      const endDate = new Date(year, month, 0, 23, 59, 59, 999);
+      whereClause.date = { gte: startDate, lte: endDate };
+    }
+
     const incomes = await this.prisma.income.findMany({
-      where: { userId },
+      where: whereClause,
       orderBy: { date: 'desc' }
     });
     
     const expenses = await this.prisma.expense.findMany({
-      where: { userId },
+      where: whereClause,
       include: { category: true },
       orderBy: { date: 'desc' }
     });

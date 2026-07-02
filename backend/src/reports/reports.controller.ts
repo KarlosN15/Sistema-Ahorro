@@ -25,8 +25,14 @@ export class ReportsController {
   }
 
   @Get('history')
-  getHistory(@CurrentUser() user: any) {
-    return this.reportsService.getHistory(user.userId);
+  getHistory(
+    @CurrentUser() user: any,
+    @Query('year') year: string,
+    @Query('month') month: string,
+  ) {
+    const y = year ? parseInt(year, 10) : undefined;
+    const m = month ? parseInt(month, 10) : undefined;
+    return this.reportsService.getHistory(user.userId, y, m);
   }
 
   @Get('ai-advice')
