@@ -25,7 +25,7 @@ model Service {
   id          Int      @id @default(autoincrement())
   name        String
   description String?
-  price       Float
+  price       Decimal  @db.Decimal(10,2)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -35,7 +35,7 @@ model Service {
 
 model Income {
   id          Int      @id @default(autoincrement())
-  amount      Float
+  amount      Decimal  @db.Decimal(10,2)
   date        DateTime @default(now())
   description String?
   clientName  String?
@@ -70,7 +70,7 @@ model ExpenseCategory {
 
 model Expense {
   id          Int             @id @default(autoincrement())
-  amount      Float
+  amount      Decimal  @db.Decimal(10,2)
   date        DateTime        @default(now())
   description String?
   
@@ -96,7 +96,7 @@ model SavingsGoal {
   userId      Int
   user        User            @relation(fields: [userId], references: [id])
   type        SavingsGoalType
-  amount      Float           // Amount to save per period
+  amount      Decimal  @db.Decimal(10,2)           // Amount to save per period
   isActive    Boolean         @default(true)
   
   deposits    SavingsDeposit[]
@@ -109,7 +109,7 @@ model SavingsDeposit {
   id          Int             @id @default(autoincrement())
   goalId      Int
   goal        SavingsGoal     @relation(fields: [goalId], references: [id])
-  amount      Float
+  amount      Decimal  @db.Decimal(10,2)
   date        DateTime        @default(now())
   
   // Optional link to the expense created when deposited

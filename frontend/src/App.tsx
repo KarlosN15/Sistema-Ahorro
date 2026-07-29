@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { MainLayout } from './components/layout/MainLayout';
+import { Toaster } from 'react-hot-toast';
 
 const LoginPage = lazy(() => import('./features/auth/LoginPage').then(m => ({ default: m.LoginPage })));
 const RegisterPage = lazy(() => import('./features/auth/RegisterPage').then(m => ({ default: m.RegisterPage })));
@@ -27,6 +28,7 @@ const App: React.FC = () => {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <Toaster position="top-right" toastOptions={{ duration: 4000, style: { background: '#1F2937', color: '#fff', border: '1px solid #374151' } }} />
         <Suspense fallback={<SuspenseLoader />}>
           <Routes>
             <Route path="/login" element={<LoginPage />} />

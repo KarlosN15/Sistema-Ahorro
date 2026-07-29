@@ -24,13 +24,13 @@ export class ReportsService {
 
     expenses.forEach(exp => {
       if (exp.category.type === 'BUSINESS') {
-        businessExpenses += exp.amount;
+        businessExpenses += exp.amount.toNumber();
       } else if (exp.category.type === 'PERSONAL') {
-        personalExpenses += exp.amount;
+        personalExpenses += exp.amount.toNumber();
       }
     });
 
-    const totalIncome = incomes._sum.amount || 0;
+    const totalIncome = incomes._sum.amount?.toNumber() || 0;
     const netProfit = totalIncome - businessExpenses;
 
     return {
@@ -74,10 +74,10 @@ export class ReportsService {
     });
 
     const currentClients = currentIncomes.length;
-    const currentIncomeTotal = currentIncomes.reduce((acc, curr) => acc + curr.amount, 0);
+    const currentIncomeTotal = currentIncomes.reduce((acc, curr) => acc + curr.amount.toNumber(), 0);
     const currentBusinessExpenses = currentExpenses
       .filter(e => e.category.type === 'BUSINESS')
-      .reduce((acc, curr) => acc + curr.amount, 0);
+      .reduce((acc, curr) => acc + curr.amount.toNumber(), 0);
     const currentNetProfit = currentIncomeTotal - currentBusinessExpenses;
 
     const prevIncomes = await this.prisma.income.findMany({
@@ -134,7 +134,7 @@ export class ReportsService {
       }
       const data = historyMap.get(key);
       data.clients += 1;
-      data.totalIncome += inc.amount;
+      data.totalIncome += inc.amount.toNumber();
     });
 
     expenses.forEach(exp => {
@@ -144,7 +144,7 @@ export class ReportsService {
         historyMap.set(key, { dayStart: key, clients: 0, totalIncome: 0, businessExpenses: 0 });
       }
       const data = historyMap.get(key);
-      data.businessExpenses += exp.amount;
+      data.businessExpenses += exp.amount.toNumber();
     });
 
     const historyList = Array.from(historyMap.values()).map(h => ({

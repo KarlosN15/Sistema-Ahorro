@@ -46,7 +46,7 @@ export class SavingsService {
       return { 
         hasGoal: true, 
         goal, 
-        pendingDeposit: deposit ? null : goal.amount 
+        pendingDeposit: deposit ? null : goal.amount.toNumber()
       };
     } else { // WEEKLY
       const getMonday = (d: Date) => {
@@ -68,7 +68,7 @@ export class SavingsService {
       return { 
         hasGoal: true, 
         goal, 
-        pendingDeposit: deposit ? null : goal.amount 
+        pendingDeposit: deposit ? null : goal.amount.toNumber()
       };
     }
   }
@@ -90,12 +90,12 @@ export class SavingsService {
       _sum: { amount: true },
     });
 
-    const totalSaved = aggregate._sum.amount || 0;
+    const totalSaved = aggregate._sum.amount?.toNumber() || 0;
 
     return {
       hasGoal: true,
       goalType: goal.type,
-      goalAmount: goal.amount,
+      goalAmount: goal.amount.toNumber(),
       totalSaved,
       history: deposits,
     };

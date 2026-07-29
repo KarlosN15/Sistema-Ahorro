@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { IncomesService } from './incomes.service';
 import { CreateIncomeDto } from './dto/income.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -15,8 +15,14 @@ export class IncomesController {
   }
 
   @Get()
-  findAll(@CurrentUser() user: any) {
-    return this.incomesService.findAll(user.userId);
+  findAll(
+    @CurrentUser() user: any,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    const pageNumber = page ? parseInt(page, 10) : undefined;
+    const limitNumber = limit ? parseInt(limit, 10) : undefined;
+    return this.incomesService.findAll(user.userId, pageNumber, limitNumber);
   }
 
   @Put(':id')

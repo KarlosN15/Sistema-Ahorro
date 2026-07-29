@@ -16,12 +16,27 @@ export class ExpensesService {
     });
   }
 
-  async findAll(userId: number) {
-    return this.prisma.expense.findMany({
+  async findAll(userId: number, page?: number, limit?: number) {
+    const args: any = {
       where: { userId },
       include: { category: true },
       orderBy: { date: 'desc' },
-    });
+    };
+
+    if (page !== undefined && limit !== undefined) {
+      args.skip = (page - 1) * limit;
+      args.take = limit;
+    }
+
+    const data = await this.prisma.expense.findMany(args);
+    const total = await this.prisma.expense.count({ where: { userId } });
+
+    return {
+      data,
+      total,
+      page: page || 1,
+      limit: limit || total,
+    };
   }
 
   update(id: number, userId: number, data: any) {
